@@ -1,0 +1,9 @@
+<div class="jp-portrait">
+  <div class="imgContainer">
+    <img #zoomImage [src]="getImagePath()" [ngStyle]="getImgStyle()">
+  </div>
+  <div *ngFor="let displayText of displayTexts" class="textContainer">
+    <div [innerHTML]="displayText.text" [ngStyle]="getTextStyle(displayText)">
+    </div>
+  </div>
+</div>
