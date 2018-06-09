@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, Input, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, OnInit, ViewChild} from '@angular/core';
 import {DeepWorldElement, DisplayText} from './deep-world-element';
 
 @Component({
@@ -6,39 +6,38 @@ import {DeepWorldElement, DisplayText} from './deep-world-element';
   templateUrl: './deep-world.component.html',
   styleUrls: ['./deep-world.component.css'],
 })
-export class DeepWorldComponent {
-  private zoomDelta = 10;
+export class DeepWorldComponent implements OnInit{
+  private zoomDelta = 0.3;
   @Input() imagePaths: DeepWorldElement[];
-
+  @Input() autoZoom = false;
   @ViewChild('zoomImage') image: ElementRef;
+
   imageOnDisplay = 0;
   zoomPercentage = 100;
   left = 50;
   top = 50;
+  x = window.pageXOffset + window.innerWidth / 2;
+  y = window.pageYOffset + window.innerHeight / 2;
 
   displayTexts: DisplayText[] = [];
 
   constructor() {
   }
 
+
+   @HostListener('mousemove', ['$event']) onMouseUpdate(e) {
+     this.x = e.pageX;
+     this.y = e.pageY;
+   }
+
+   @HostListener('mouseenter', ['$event']) onMouseEnter(e) {
+    this.x = e.pageX;
+    this.y = e.pageY;
+  }
+
   @HostListener('mousewheel', ['$event']) onMouseWheelChrome(event: any) {
     if (event.deltaY < 0) {
-
-      this.zoomPercentage += this.zoomDelta;
-      this.top -= this.calculateChange(event.clientY, window.screen.height);
-      this.left -= this.calculateChange(event.clientX, window.screen.width);
-
-      if ( this.imagePaths[this.imageOnDisplay].displayTexts !== undefined) {
-
-        this.imagePaths[this.imageOnDisplay].displayTexts.forEach(_ => {
-          _.locationY += (_.locationY / 100 - (event.clientY / window.screen.height)) * Math.PI;
-          _.locationX += (_.locationX / 100 - (event.clientX / window.screen.width)) * Math.PI;
-        });
-      }
-
-      if (this.zoomPercentage > 300) {
-        this.getNextImage();
-      }
+      this.zoom(event.clientX, event.clientY);
     } else {
       this.resetParameter();
       /*
@@ -52,6 +51,26 @@ export class DeepWorldComponent {
       */
     }
     event.preventDefault();
+  }
+
+  private zoom( x: number, y: number) {
+
+      this.zoomPercentage += this.zoomDelta;
+      this.top -= this.calculateChange(y, window.screen.height);
+      this.left -= this.calculateChange(x, window.screen.width);
+
+      if (this.imagePaths[this.imageOnDisplay].displayTexts !== undefined) {
+
+        this.imagePaths[this.imageOnDisplay].displayTexts.forEach(_ => {
+          _.locationY += (_.locationY / 100 - (y / window.screen.height)) * Math.PI;
+          _.locationX += (_.locationX / 100 - (x / window.screen.width)) * Math.PI;
+        });
+      }
+
+      if (this.zoomPercentage > 300) {
+        this.getNextImage();
+      }
+
   }
 
   getImgStyle(): any {
@@ -108,5 +127,11 @@ export class DeepWorldComponent {
       });
     }
     */
+  }
+
+  ngOnInit(): void {
+    if (this.autoZoom) {
+      setInterval(() => this.zoom(this.x, this.y), 20);
+    }
   }
 }
