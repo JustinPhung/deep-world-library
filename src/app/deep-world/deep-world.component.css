@@ -17,6 +17,11 @@
   top: 0;
   left: 0;
 }
+
+.hide-overflow{
+  overflow: hidden;
+}
+
 .textContainer {
   z-index: 10;
 }

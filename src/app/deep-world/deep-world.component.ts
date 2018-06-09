@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {DeepWorldElement, DisplayText} from './deep-world-element';
 
 @Component({
@@ -10,7 +10,9 @@ export class DeepWorldComponent implements OnInit{
   private zoomDelta = 0.3;
   @Input() imagePaths: DeepWorldElement[];
   @Input() autoZoom = false;
+  @Input() hideOverflow = true;
   @ViewChild('zoomImage') image: ElementRef;
+  @Output() change: EventEmitter<number> = new EventEmitter<number>();
 
   imageOnDisplay = 0;
   zoomPercentage = 100;
@@ -98,6 +100,7 @@ export class DeepWorldComponent implements OnInit{
     } else {
       this.imageOnDisplay += 1;
     }
+     this.change.emit(this.imageOnDisplay);
      this.resetParameter();
   }
 

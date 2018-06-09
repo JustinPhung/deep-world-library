@@ -1,5 +1,5 @@
-<div class="jp-portrait">
-  <div class="imgContainer">
+<div class="jp-portrait" [ngClass]="{'hide-overflow': hideOverflow }">
+  <div class="imgContainer" [ngClass]="{'hide-overflow': hideOverflow }">
     <img #zoomImage [src]="getImagePath()" [ngStyle]="getImgStyle()">
   </div>
   <div *ngFor="let displayText of displayTexts" class="textContainer">
